@@ -1,0 +1,85 @@
+@media only screen and (max-width: 800px) {
+
+    .ui-jqgrid-btable > tbody > tr:first-child > td {
+        line-height: 0;
+        margin-top: -17px;
+        visibility: hidden;
+    }
+	
+	/* Force table to not be like tables anymore */
+	.ui-jqgrid-btable table, 
+	.ui-jqgrid-btable thead, 
+	.ui-jqgrid-btable tbody, 
+	.ui-jqgrid-btable th, 
+	.ui-jqgrid-btable td, 
+	.ui-jqgrid-btable tr { 
+		display: block; 
+	}
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+
+	/*.ui-jqgrid-btable thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}*/
+
+    .ui-jqgrid-htable thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	.ui-jqgrid-btable tr { border: 1px solid #ccc; }
+
+	.ui-jqgrid-btable td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50% !important; 
+		white-space: normal;
+		text-align:left;
+	}
+
+	.ui-jqgrid-btable td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+		text-align:left;
+		font-weight: bold;
+	}
+
+	/*
+	Label the data
+	*/
+	.ui-jqgrid-btable td:before { content: attr(data-title); }
+}
+
+
+@media only screen and (max-width: 550px) {
+
+    .ui-jqgrid .ui-jqgrid-pager {
+        height: auto;
+    }
+
+    div.ui-pager-control > table > tbody > tr > td:nth-child(1) {
+        display: block;
+        width: 100% !important;
+    }
+
+    div.ui-pager-control > table > tbody > tr > td:nth-child(2) {
+        display: block;
+        width: 100% !important;
+    }
+
+    div.ui-pager-control > table > tbody > tr > td:nth-child(3) {
+        display: block;
+        width: 100% !important;
+    }
+}	
