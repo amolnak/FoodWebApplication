@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Configuration;
+using System.Data;
+using System.Text;
 using System.Web.UI.HtmlControls;
 
-public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
+public partial class CPanel_ItemAddOnList : System.Web.UI.Page
 {
     public static int rowcount = 0;
     protected void Page_Load(object sender, EventArgs e)
@@ -22,6 +22,7 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         Mstrbody.Attributes.Add("class", "sidebar-mini fixed animated fadeIn sidebar-collapse");
         smenuUI.Attributes.Add("class", "sidebar-menu");
         #endregion
+
 
         string strMsg = "";
         if (!Page.IsPostBack)
@@ -38,14 +39,14 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
     private void GetJSon(ref string ErrMsg)
     {
         string ErrMsgs = ""; ErrMsg = "";
-        string sCols_NS = "VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,GPSEnabled";
+        string sCols_NS = "ItemAddOnID,AddOnName,AddOnPrice";
         StringBuilder sbGridData = new StringBuilder();
         string sContentID = "";
         if (sCols_NS != "")
         {
             string[] sColArr = sCols_NS.Split(',');
 
-            using (DataTable Dt = clsDatabase.GetDT(@"SELECT VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,CASE GPSEnabled WHEN 'Y' THEN 'Yes' else 'No' end as GPSEnabled FROM DeliveryVehicles", ref ErrMsgs))
+            using (DataTable Dt = clsDatabase.GetDT(@"SELECT ItemAddOnID,AddOnName,AddOnPrice FROM ItemAddOns", ref ErrMsgs))
             {
                 if (ErrMsgs != "")
                 {
@@ -61,15 +62,15 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
                         sContentID = "";
                         foreach (string item in sColArr)
                         {
-                            if (item != "VehicleID")
+                            if (item != "ItemAddOnID")
                                 sbGridData.Append("'" + item + "': \"" + clsCommon.ValidateJsonStringWithEscChars(r[item].ToString().Trim()) + "\", ");
 
-                            if (item == "VehicleID")
+                            if (item == "ItemAddOnID")
                             {
                                 sContentID = r[item].ToString();
                             }
                         }
-                        sbGridData.Append("'VehicleID': \"" + sContentID + "\"");
+                        sbGridData.Append("'ItemAddOnID': \"" + sContentID + "\"");
                         sbGridData.Append("},");
                     }
                 }
@@ -84,7 +85,7 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("$(document).ready(function () {");
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
-        sbScript.Append("var Edit= \"<a href='\\DeliveryVehicle_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append("var Edit= \"<a href='\\ItemAddOn_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -92,15 +93,11 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("contentType: 'application/json; charset=utf-8',");
         sbScript.Append("datatype: 'local',");
         sbScript.Append("data: gidData,");
-        sbScript.Append("colNames: ['Vehicle No','Brand','Model','Chasis No','Fuel Type','GPS Enabled','Action'],");
+        sbScript.Append("colNames: ['AddOn Name','AddOn Price','Action'],");
         sbScript.Append("colModel: [");
-        sbScript.Append("{name:'VehicleNo', index:'VehicleNo',width:150, cellattr: function () { return ' data-title=\"Vehicle No\"'; }},");
-        sbScript.Append("{name:'Brand', index:'Brand',width:150, cellattr: function () { return ' data-title=\"Brand\"'; }},");
-        sbScript.Append("{name:'Model', index:'Model',classes:'alignCenter', hidden:false,width:70, cellattr: function () { return ' data-title=\"Model\"'; }},");
-        sbScript.Append("{name:'ChasisNo', index:'ChasisNo',classes:'alignCenter',width:50, cellattr: function () { return ' data-title=\"Chasis No\"'; }},");
-        sbScript.Append("{name:'FuelType', index:'FuelType',width:50, cellattr: function () { return ' data-title=\"Fuel Type\"'; }},");
-        sbScript.Append("{name:'GPSEnabled', index:'GPSEnabled', classes:'alignCenter', cellattr: function () { return ' data-title=\"GPS Enabled\"'; }, width:50},");
-        sbScript.Append("{name:'VehicleID',index:'VehicleID',sortable:false,search : false, classes:'alignCenter', cellattr: function () { return ' data-title=\"Action\"'; },width:30, formatter: btnEdit}");
+        sbScript.Append("{name:'AddOnName', index:'AddOnName',  cellattr: function () { return ' data-title=\"AddOn Name\"'; }},");
+        sbScript.Append("{name:'AddOnPrice', index:'AddOnPrice', hidden:false, classes:'alignCenter', cellattr: function () { return ' data-title=\"AddOn Price\"'; }},");
+        sbScript.Append("{name:'ItemAddOnID',index:'ItemAddOnID',sortable:false,search : false, classes:'alignCenter', cellattr: function () { return ' data-title=\"Action\"'; },width:30, formatter: btnEdit}");
         sbScript.Append("],");
         sbScript.Append("gridview: true,");
         sbScript.Append("rownumbers: false,");
@@ -137,13 +134,11 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("});");
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid('navGrid', '#" + gridPager.ClientID + "', { edit: false, add: false, del: false },{/* edit options */ },{ /* add options */},{ /* delete options */},{ /* search options */ sopt: ['cn','nc','eq','ne','lt','le','gt','ge','bw','bn','ew','en']},{});");
 
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'VehicleNo', '', {'text-align':'left'});");
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'Brand', '', {'text-align':'left'});");
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'FuelType', '', {'text-align':'left'});"); 
-
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'AddOnName', '', {'text-align':'left'});");
         sbScript.Append("});");
 
         sbScript.Append("</script>");
         ltrScript.Text = sbScript.ToString();
     }
+
 }

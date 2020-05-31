@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
+using System.Configuration;
+using System.Text;
+using System.Data;
 
-public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
+public partial class CPanel_DeliveryBoysList : System.Web.UI.Page
 {
     public static int rowcount = 0;
     protected void Page_Load(object sender, EventArgs e)
@@ -38,14 +38,16 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
     private void GetJSon(ref string ErrMsg)
     {
         string ErrMsgs = ""; ErrMsg = "";
-        string sCols_NS = "VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,GPSEnabled";
+        string sCols_NS = "DeliveryBoyID,DBName,DBEmail,DBPhone1,DBPhone2,DBRegion,DBCity,VehicleNo";
         StringBuilder sbGridData = new StringBuilder();
         string sContentID = "";
         if (sCols_NS != "")
         {
             string[] sColArr = sCols_NS.Split(',');
 
-            using (DataTable Dt = clsDatabase.GetDT(@"SELECT VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,CASE GPSEnabled WHEN 'Y' THEN 'Yes' else 'No' end as GPSEnabled FROM DeliveryVehicles", ref ErrMsgs))
+            using (DataTable Dt = clsDatabase.GetDT(@"select DeliveryBoyID,DBFName + ' ' + DBLName as DBName,DBEmail,DBPhone1,DBPhone2,R.RegionName as DBRegion,
+            C.CityName as DBCity,VehicleNo from DeliveryBoys DB INNER JOIN DeliveryVehicles DV on DV.VehicleID=DB.VehicleID INNER JOIN Region R ON 
+            DB.DBRegionID = R.RegionID INNER JOIN City C on C.CityID = DB.DBCityID", ref ErrMsgs))
             {
                 if (ErrMsgs != "")
                 {
@@ -61,15 +63,15 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
                         sContentID = "";
                         foreach (string item in sColArr)
                         {
-                            if (item != "VehicleID")
+                            if (item != "DeliveryBoyID")
                                 sbGridData.Append("'" + item + "': \"" + clsCommon.ValidateJsonStringWithEscChars(r[item].ToString().Trim()) + "\", ");
 
-                            if (item == "VehicleID")
+                            if (item == "DeliveryBoyID")
                             {
                                 sContentID = r[item].ToString();
                             }
                         }
-                        sbGridData.Append("'VehicleID': \"" + sContentID + "\"");
+                        sbGridData.Append("'DeliveryBoyID': \"" + sContentID + "\"");
                         sbGridData.Append("},");
                     }
                 }
@@ -84,7 +86,7 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("$(document).ready(function () {");
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
-        sbScript.Append("var Edit= \"<a href='\\DeliveryVehicle_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append("var Edit= \"<a href='\\DeliveryBoy_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -92,15 +94,16 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("contentType: 'application/json; charset=utf-8',");
         sbScript.Append("datatype: 'local',");
         sbScript.Append("data: gidData,");
-        sbScript.Append("colNames: ['Vehicle No','Brand','Model','Chasis No','Fuel Type','GPS Enabled','Action'],");
+        sbScript.Append("colNames: ['Name','Email','Phone No.','Alternate Phone No.','Region','City','Vehicle No','Action'],");
         sbScript.Append("colModel: [");
-        sbScript.Append("{name:'VehicleNo', index:'VehicleNo',width:150, cellattr: function () { return ' data-title=\"Vehicle No\"'; }},");
-        sbScript.Append("{name:'Brand', index:'Brand',width:150, cellattr: function () { return ' data-title=\"Brand\"'; }},");
-        sbScript.Append("{name:'Model', index:'Model',classes:'alignCenter', hidden:false,width:70, cellattr: function () { return ' data-title=\"Model\"'; }},");
-        sbScript.Append("{name:'ChasisNo', index:'ChasisNo',classes:'alignCenter',width:50, cellattr: function () { return ' data-title=\"Chasis No\"'; }},");
-        sbScript.Append("{name:'FuelType', index:'FuelType',width:50, cellattr: function () { return ' data-title=\"Fuel Type\"'; }},");
-        sbScript.Append("{name:'GPSEnabled', index:'GPSEnabled', classes:'alignCenter', cellattr: function () { return ' data-title=\"GPS Enabled\"'; }, width:50},");
-        sbScript.Append("{name:'VehicleID',index:'VehicleID',sortable:false,search : false, classes:'alignCenter', cellattr: function () { return ' data-title=\"Action\"'; },width:30, formatter: btnEdit}");
+        sbScript.Append("{name:'DBName', index:'DBName',width:100, cellattr: function () { return ' data-title=\"Name\"'; }},");
+        sbScript.Append("{name:'DBEmail', index:'DBEmail',width:120, cellattr: function () { return ' data-title=\"Email\"'; }},");
+        sbScript.Append("{name:'DBPhone1', index:'DBPhone1',classes:'alignCenter', hidden:false,width:70, cellattr: function () { return ' data-title=\"Phone No\"'; }},");
+        sbScript.Append("{name:'DBPhone2', index:'DBPhone2',classes:'alignCenter',width:90, cellattr: function () { return ' data-title=\"Alternate Phone No\"'; }},");
+        sbScript.Append("{name:'DBRegion', index:'DBRegion',width:50, cellattr: function () { return ' data-title=\"Region\"'; }},");
+        sbScript.Append("{name:'DBCity', index:'DBCity', cellattr: function () { return ' data-title=\"City\"'; }, width:50},");
+        sbScript.Append("{name:'VehicleNo', index:'VehicleNo', classes:'alignCenter', cellattr: function () { return ' data-title=\"Vehicle No\"'; }, width:50},");
+        sbScript.Append("{name:'DeliveryBoyID', index:'DeliveryBoyID',sortable:false,search : false, classes:'alignCenter', cellattr: function () { return ' data-title=\"Action\"'; },width:30, formatter: btnEdit}");
         sbScript.Append("],");
         sbScript.Append("gridview: true,");
         sbScript.Append("rownumbers: false,");
@@ -137,10 +140,10 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("});");
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid('navGrid', '#" + gridPager.ClientID + "', { edit: false, add: false, del: false },{/* edit options */ },{ /* add options */},{ /* delete options */},{ /* search options */ sopt: ['cn','nc','eq','ne','lt','le','gt','ge','bw','bn','ew','en']},{});");
 
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'VehicleNo', '', {'text-align':'left'});");
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'Brand', '', {'text-align':'left'});");
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'FuelType', '', {'text-align':'left'});"); 
-
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'DBName', '', {'text-align':'left'});");
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'DBEmail', '', {'text-align':'left'});");
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'DBRegion', '', {'text-align':'left'});");
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'DBCity', '', {'text-align':'left'});");
         sbScript.Append("});");
 
         sbScript.Append("</script>");

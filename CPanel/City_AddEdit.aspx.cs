@@ -130,7 +130,7 @@ public partial class CPanel_City_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updaing City.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occured while adding/Updating City.&nbsp;" + ErrMsg;
         }
     }
 

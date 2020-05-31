@@ -144,7 +144,7 @@ public partial class CPanel_Admin_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updaing admin.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occured while adding/Updating admin.&nbsp;" + ErrMsg;
         }
     }
 

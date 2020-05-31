@@ -29,7 +29,7 @@
                                     <div class="col col-md-3">
                                         <label class="control-label">Brand <span class="text-danger">*</span></label>
                                     </div>
-                                    <div class="col-10 col-md-6">
+                                    <div class="col-8 col-md-4">
                                         <asp:TextBox ID="txtBrand" runat="server" CssClass="form-control" placeholder="Enter brand." MaxLength="90" TabIndex="2" />
                                     </div>
                                 </div>
@@ -45,7 +45,7 @@
                                     <div class="col col-md-3">
                                         <label class="control-label">Chasis No <span class="text-danger">*</span></label>
                                     </div>
-                                    <div class="col-10 col-md-6">
+                                    <div class="col-8 col-md-4">
                                         <asp:TextBox ID="txtChasisNo" runat="server" CssClass="form-control" placeholder="Enter chasis no." MaxLength="50" TabIndex="4" />
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtChasisNo" ErrorMessage="Please enter chasis no."
                                             Display="Dynamic" CssClass="text-danger" ValidationGroup="vg" EnableClientScript="true" />
