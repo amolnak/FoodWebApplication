@@ -15,7 +15,7 @@
                             <strong>Manage Delivery Boys </strong>
                         </div>
                         <div style="padding-top: 5px;" align="right">
-                            <a href="DeliveryBoys_AddEdit.aspx" target="_parent" class="btn btn-link btn-sm"><strong>Add Delivery Boys <i class="fa fa-plus"></i></strong></a>
+                            <a href="DeliveryBoy_AddEdit.aspx" target="_parent" class="btn btn-link btn-sm"><strong>Add Delivery Boys <i class="fa fa-plus"></i></strong></a>
                         </div>
                         <div style="clear: both; padding: 2px;"></div>
 

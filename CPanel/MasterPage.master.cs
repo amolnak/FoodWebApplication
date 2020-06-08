@@ -13,22 +13,21 @@ using System.Web.UI.WebControls;
 public partial class CPanel_MasterPage : System.Web.UI.MasterPage
 {
     protected void Page_Load(object sender, EventArgs e)
-    {
-        clsCommon.AdminAuthentication();
-
+    {       
         if (!Page.IsPostBack)
         {
             if (HttpContext.Current.Request.QueryString["WTIL"] != null && HttpContext.Current.Request.QueryString["WTIL"] == "Y")
             {
                 hreflogout.HRef = "/CPanel/Logout.aspx?WTIL=Y";
-            }
+            }          
+         
             LoadMenu(clsCommon.GetSessionKeyValue("AccessLevel"));
             spnAdminName.InnerHtml = clsCommon.GetSessionKeyValue("AName");
             hrefDashboard.HRef = clsCommon.SiteURLSub("/CPanel/Dashboard1.aspx");
             hrefDBGulLogo.HRef = clsCommon.SiteURLSub("/CPanel/Dashboard1.aspx");
         }
 
-        string ErrMsg = "", strSQL = "", strAdminID = "";
+        string ErrMsg = "", strSQL = "";
 
         if (Convert.ToInt16(clsCommon.GetSessionKeyValue("AccessLevel")) < 3)
         {

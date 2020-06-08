@@ -330,14 +330,14 @@ public class clsCommon
         {
             if (!(HttpContext.Current.Session["DEVELOPER"] != null && GetSessionKeyValue("AccessLevel") == "0"))
             {
-                HttpContext.Current.Response.Redirect("/CPanel/Dashboard1.aspx");
+                HttpContext.Current.Response.Redirect("/CPanel/Logout.aspx");
             }
         }
         else
         {
             if (!(HttpContext.Current.Session["ADMIN"] != null && Convert.ToInt16(GetSessionKeyValue("AccessLevel")) > 0))
             {
-                HttpContext.Current.Response.Redirect("/CPanel/Dashboard1.aspx");
+                HttpContext.Current.Response.Redirect("/CPanel/Logout.aspx");
             }
         }
     }

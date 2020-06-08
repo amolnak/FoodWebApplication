@@ -9,65 +9,65 @@
             <div class="col-md-12 inBodyTop">
                 <div class="card">
                     <div class="card-body">
-                        <span align="left" id="lblTitle" class="text-dark" runat="server"></span>
+                        <div align="center">
+                            <span align="left" id="lblTitle" class="text-dark" runat="server"></span>
+                        </div>
 
-                        <div class="row">
+                        <div class="row mt-20">
 
                             <div class="alert alert-danger p-10 mb-15" id="dvError" runat="server"></div>
                             <div class="form-horizontal form-sm col-lg-12">
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">Vehicle No <span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        Vehicle No <span class="text-danger">*</span>
                                     </div>
-                                    <div class="col-8 col-md-4">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtVehicleNo" runat="server" CssClass="form-control" placeholder="Enter vehicle no." MaxLength="25" TabIndex="1" />
                                         <asp:RequiredFieldValidator ID="reqfld_VehicleNo" runat="server" ControlToValidate="txtVehicleNo" ErrorMessage="Please enter vehicle no."
                                             Display="Dynamic" CssClass="text-danger" ValidationGroup="vg" EnableClientScript="true" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">Brand <span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        Brand 
                                     </div>
-                                    <div class="col-8 col-md-4">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtBrand" runat="server" CssClass="form-control" placeholder="Enter brand." MaxLength="90" TabIndex="2" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">Model<span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        Model 
                                     </div>
-                                    <div class="col-8 col-md-4">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtModel" runat="server" CssClass="form-control" placeholder="Enter model." MaxLength="50" TabIndex="3" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">Chasis No <span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        Chasis No <span class="text-danger">*</span>
                                     </div>
-                                    <div class="col-8 col-md-4">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtChasisNo" runat="server" CssClass="form-control" placeholder="Enter chasis no." MaxLength="50" TabIndex="4" />
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtChasisNo" ErrorMessage="Please enter chasis no."
                                             Display="Dynamic" CssClass="text-danger" ValidationGroup="vg" EnableClientScript="true" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">Fuel Type <span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        Fuel Type  
                                     </div>
-                                    <div class="col-8 col-md-4">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtFuelType" runat="server" CssClass="form-control" placeholder="Enter fuel type." MaxLength="50" TabIndex="5" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">GPS Enabled <span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        GPS Enabled  
                                     </div>
-                                    <div class="col-12 col-md-8">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
                                         <div class="radio radio-inline">
-                                            <asp:RadioButton ID="rdbYes" runat="server" Text="Yes" GroupName="Status" Checked="true" TabIndex="6" />
-                                        </div>
-                                        <div class="radio radio-inline">
+                                            <asp:RadioButton ID="rdbYes" runat="server" Text="Yes" GroupName="Status" Checked="true" TabIndex="6" />&nbsp;&nbsp;&nbsp;&nbsp;                                       
                                             <asp:RadioButton ID="rdbNo" runat="server" Text="No" GroupName="Status" TabIndex="7" />
                                         </div>
                                     </div>
@@ -86,7 +86,6 @@
                         <div class="clear"></div>
                         <asp:CustomValidator ID="custVal" runat="server" OnServerValidate="custVal_ServerValidate"></asp:CustomValidator>
                         <asp:HiddenField ID="hfVehicleID" runat="server" />
-
                     </div>
                 </div>
             </div>

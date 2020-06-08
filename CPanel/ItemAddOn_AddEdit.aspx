@@ -9,27 +9,29 @@
              <div class="col-md-12 inBodyTop">
                 <div class="card">
                     <div class="card-body">
-                       <span align="left" id="lblTitle" class="text-dark" runat="server"></span>
+                       <div align="center">
+                            <span align="left" id="lblTitle" class="text-dark" runat="server"></span>
+                        </div>
                  
-                        <div class="row">
+                        <div class="row mt-20">
                              
                             <div class="alert alert-danger p-10 mb-15" id="dvError" runat="server"></div>
                             <div class="form-horizontal form-sm col-lg-12">
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">AddOn Name<span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        AddOn Name<span class="text-danger">*</span> 
                                     </div>
-                                    <div class="col-10 col-md-6">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtAddOnName" runat="server" CssClass="form-control" placeholder="Enter addon name." MaxLength="100" TabIndex="1" />
                                         <asp:RequiredFieldValidator ID="reqfld_addonname" runat="server" ControlToValidate="txtAddOnName" ErrorMessage="Please enter addon name."
                                             Display="Dynamic" CssClass="text-danger" ValidationGroup="vg" EnableClientScript="true" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label class="control-label">AddOn Price <span class="text-danger">*</span></label>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                         AddOn Price <span class="text-danger">*</span> 
                                     </div>
-                                    <div class="col-10 col-md-6">
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
                                         <asp:TextBox ID="txtAddOnPrice" runat="server" CssClass="form-control" placeholder="Enter addon price." MaxLength="8" TabIndex="2" />
                                         <asp:RequiredFieldValidator ID="reqfld_addonprice" runat="server" ControlToValidate="txtAddOnPrice" ErrorMessage="Please enter addon price."
                                             Display="Dynamic" CssClass="text-danger" ValidationGroup="vg" EnableClientScript="true" />

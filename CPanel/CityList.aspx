@@ -7,7 +7,13 @@
         <link href="../css/jqgrid/jquery-ui.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" media="screen" href="../css/jqgrid/ui.jqgrid.css" />
         <script type="text/javascript" src="../js/1.11.0/jquery.min.js"></script>
-
+        <%--   <div class="page-title">
+            <ul class="breadcrumb">
+                <li><a id="lnkhome" runat="server"><i aria-hidden="true" class="fa fa-home"></i></a></li>
+                <li>Data Management</li>
+                <li>Cities</li>               
+            </ul>
+        </div>--%>
         <div class="row">
             <div class="col-md-12 inBodyTop">
                 <div class="card">
@@ -15,7 +21,7 @@
                         <div align="center">
                             <strong>Manage Cities</strong>
                         </div>
-                        <div style="padding-top: 5px;" align="right">
+                        <div align="right">
                             <a href="City_AddEdit.aspx" target="_parent" class="btn btn-link btn-sm"><strong>Add City <i class="fa fa-plus"></i></strong></a>
                         </div>
                         <div style="clear: both; padding: 2px;"></div>
@@ -24,7 +30,7 @@
                         <table id="theGrid" runat="server"></table>
                         <div id="gridPager" runat="server"></div>
 
-                        <hr style="color: #ccc; background-color: #ccc; height: 1px; border: none; clear: both; margin: 10px 0;"/>
+                        <hr style="color: #ccc; background-color: #ccc; height: 1px; border: none; clear: both; margin: 10px 0;" />
 
                         <a href="Dashboard1.aspx" class="btn btn-secondary btn-sm"><i class="fa fa-chevron-left"></i>&nbsp;Back</a>
                     </div>

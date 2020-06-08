@@ -26,6 +26,8 @@ public partial class CPanel_City_AddEdit : System.Web.UI.Page
             dvError.Style.Add("display", "none");
             hfCityID.Value = "";
             lblTitle.InnerHtml = "<strong> City - Add </strong>";
+            dvStatus.Visible = false;
+            dvNote.Visible = false;
 
             if (Request.QueryString["ID"] != null)
             {
@@ -33,6 +35,20 @@ public partial class CPanel_City_AddEdit : System.Web.UI.Page
                 {
                     hfCityID.Value = Request.QueryString["ID"].ToString();
                     lblTitle.InnerHtml = "<strong> City - Edit </strong>";
+
+                    int cntRegion = 0;
+
+                    cntRegion = Convert.ToInt16(clsDatabase.GetSingleValue(string.Format(" SELECT Count(RegionID) FROM Region WHERE CityID = {0}", clsCommon.sQuote_N(Request.QueryString["ID"].ToString())), ref strMsg));
+                    if (strMsg != "")
+                    {
+                        clsCommon.ErrorAlertBox(strMsg);
+                        return;
+                    }
+
+                    if (cntRegion > 0)
+                        dvStatus.Visible = true;
+                    else
+                        dvNote.Visible = true;
 
                     using (DataTable Dt = clsDatabase.GetDT(string.Format(@"SELECT * FROM City where CityID = '{0}'", Request.QueryString["ID"].ToString().Trim()), ref strMsg))
                     {
@@ -114,9 +130,9 @@ public partial class CPanel_City_AddEdit : System.Web.UI.Page
         }
         else
         {
-            sQry = string.Format("INSERT INTO City(CityID,CityName,CityCode,Active) VALUES({0},{1},{2},{3}); ",
+            sQry = string.Format("INSERT INTO City(CityID,CityName,CityCode,Active) VALUES({0},{1},{2},'N'); ",
                         clsCommon.sQuote(clsCommon.Remove_SQLInjection(sCityID.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtCityName.Text.Trim())),
-                        clsCommon.sQuote(clsCommon.Remove_SQLInjection(txtCityCode.Text.Trim())), (rdbActive.Checked ? "'Y'" : "'N'"));
+                        clsCommon.sQuote(clsCommon.Remove_SQLInjection(txtCityCode.Text.Trim())));
         }
 
         string ErrMsg = "";
@@ -147,7 +163,7 @@ public partial class CPanel_City_AddEdit : System.Web.UI.Page
             txtCityCode.Focus();
             return;
         }
-             
+
         if (txtCityName.Text.Trim() == string.Empty)
         {
             args.IsValid = false;
@@ -155,6 +171,6 @@ public partial class CPanel_City_AddEdit : System.Web.UI.Page
             dvError.InnerText = "Please enter city name.";
             txtCityName.Focus();
             return;
-        }         
+        }
     }
 }

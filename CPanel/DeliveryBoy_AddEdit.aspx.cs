@@ -83,12 +83,10 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
     public void FillRegion(string CityID)
     {
         DataTable dtRegion = new DataTable();
-        string strSql, ErrMsg = "";
+        string strSql = "", ErrMsg = "";
 
         if (CityID != string.Empty)
             strSql = string.Format(@"SELECT RegionID,RegionName FROM Region  where CityID={0} ORDER BY RegionName ASC", clsCommon.sQuote(CityID));
-        else
-            strSql = "SELECT RegionID,RegionName FROM Region ORDER BY RegionName ASC";
 
         if (strSql != string.Empty)
         {
@@ -97,14 +95,22 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
             {
                 if (dtRegion.Rows.Count > 0)
                 {
-                    ddlRegion.DataSource = dtRegion;
-                    ddlRegion.DataBind();
+                    dvRegion.Visible = true;
+                    ddlRegion.DataSource = dtRegion;                   
                     ddlRegion.DataTextField = "RegionName";
                     ddlRegion.DataValueField = "RegionID";
+                    ddlRegion.DataBind();
                     ddlRegion.Items.Insert(0, new ListItem("Select Region", ""));
                 }
+                else
+                    dvRegion.Visible = false;
             }
+            else
+                dvRegion.Visible = false;
         }
+        else
+            dvRegion.Visible = false;
+
         if (ErrMsg != "")
         {
             clsCommon.ErrorAlertBox(ErrMsg);
@@ -141,7 +147,7 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
         else
         {
             sQry = string.Format(@"INSERT INTO DeliveryBoys(DeliveryBoyID,DBFName,DBLName,DBUserName,DBPassword,DBAddress,DBEmail,DBPhone1,DBPhone2,DBCityID,DBRegionID,LicenseNo,VehicleID)
-                           VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}); ", clsCommon.sQuote(clsCommon.Remove_SQLInjection(hfDeliveryBoyID.Value.Trim())),
+                           VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}); ", clsCommon.sQuote(sDeliveryBoyID.Trim()),
                         clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtFName.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtLName.Text.Trim())),
                         clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtUserName.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtPassword.Text.Trim())),
                           clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtAddress.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtEmail.Text.Trim())),
@@ -167,6 +173,106 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
 
     protected void custVal_ServerValidate(object source, ServerValidateEventArgs args)
     {
+        args.IsValid = true;
+        dvError.Style.Add("display", "none");
 
+        if (txtFName.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter first name.";
+            txtFName.Focus();
+            return;
+        }
+
+        if (txtLName.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter last name.";
+            txtLName.Focus();
+            return;
+        }
+
+        if (txtUserName.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter user name.";
+            txtUserName.Focus();
+            return;
+        }
+
+        if (txtPassword.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter password.";
+            txtPassword.Focus();
+            return;
+        }
+
+        if (txtAddress.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter address.";
+            txtAddress.Focus();
+            return;
+        }
+
+        if (txtEmail.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter email.";
+            txtEmail.Focus();
+            return;
+        }
+
+        if (txtPhone1.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter phone number.";
+            txtPhone1.Focus();
+            return;
+        }
+
+        if (ddlCity.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter city.";
+            ddlCity.Focus();
+            return;
+        }
+
+        if (ddlRegion.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter region.";
+            ddlRegion.Focus();
+            return;
+        }
+
+        if (txtLicenseNo.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter license no.";
+            txtLicenseNo.Focus();
+            return;
+        }
+    }
+
+    protected void ddlCity_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (ddlCity.SelectedIndex > 0)
+        {
+            dvRegion.Visible = true;
+            FillRegion(ddlCity.SelectedValue);
+        }
     }
 }

@@ -824,7 +824,9 @@ u, ins, u a, ins a { text-decoration: underline !important; }
 .sweet-alert .sa-icon.sa-error { border-color:#F27474; }.sweet-alert .sa-icon.sa-error .sa-line { background-color: #F27474; }
 .sweet-alert .sa-icon.sa-primary { border-color: #30a0e4; }.sweet-alert .sa-icon.sa-primary .sa-line { background-color: #30a0e4;}.sweet-alert .sa-icon.sa-primary .sa-placeholder { border: 4px solid rgba(48,160,228,0.2); }
 .showSweetAlertBox { background-color: transparent; border-radius: 0; left: auto; margin-left: 0; margin-top: 0; box-shadow: none; overflow: hidden; padding: 10px 20px; position: relative; top: auto; width: auto; text-align: center; } @media (max-width: 991px) { .showSweetAlertBox { -webkit-transform: scale(0.8); -ms-transform: scale(0.8); -moz-transform: scale(0.8); transform: scale(0.8);} }
-@media (max-width: 540px) { .showSweetAlertBox { margin-left: 35px; -webkit-transform: scale(0.7); -ms-transform: scale(0.7); -moz-transform: scale(0.7); transform: scale(0.7);} }
+@media (max-width: 540px) { 
+    .form-sm .control-label { font-size: 13px; padding-top: 5px; margin-bottom: 0; text-align: left; }
+    .showSweetAlertBox { margin-left: 35px; -webkit-transform: scale(0.7); -ms-transform: scale(0.7); -moz-transform: scale(0.7); transform: scale(0.7);} }
 /*for sweetalert inner scroll : https://github.com/t4t5/sweetalert/issues/521 */
 .sweet-alert { box-sizing : border-box;	max-height : 100% !important; overflow-y : auto !important; padding : 0 17px 25px !important; }
 .sweet-alert:before { content : "";	display : block; height : 17px; width : 0; }
