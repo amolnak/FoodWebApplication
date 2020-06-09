@@ -38,6 +38,53 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+
+            function DeleteVehicle(VehicleID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this vehicle?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteVehicle(VehicleID, OnSuccessDelVehicle, OnErrorDelVehicle);
+           });
+
+            }
+
+            function OnSuccessDelVehicle(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "Vehicle deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+                    swal("", "Error occurred while deleting vehicle.", "error");
+           }
+       }
+
+       function OnErrorDelVehicle(result) {
+           swal("", "Error occurred while deleting vehicle.", "error");
+       }
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
         </script>
     </form>
 </asp:Content>

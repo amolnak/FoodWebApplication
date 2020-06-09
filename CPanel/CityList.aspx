@@ -45,6 +45,55 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+
+            function DeleteCity(CityID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this city?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteCity(CityID, OnSuccessDelCity, OnErrorDelCity);
+           });
+
+            }
+
+            function OnSuccessDelCity(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "City deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+                    swal("", "Error occurred while deleting city.", "error");
+           }
+       }
+
+       function OnErrorDelCity(result) {
+           swal("", "Error occurred while deleting city.", "error");
+       }
+
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
+
         </script>
     </form>
 </asp:Content>

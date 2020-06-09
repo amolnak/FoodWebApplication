@@ -121,7 +121,7 @@ public partial class CPanel_Region_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating Region.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating Region.&nbsp;" + ErrMsg;
         }
     }
 

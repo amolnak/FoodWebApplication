@@ -50,7 +50,7 @@ public partial class CPanel_Item_AddEdit : System.Web.UI.Page
             {
                 if (Request.QueryString["ID"].ToString() != "")
                 {
-                   // a_view.Visible = true;
+                    // a_view.Visible = true;
                     hfItemID.Value = Request.QueryString["ID"].ToString();
                     lblTitle.InnerHtml = "<strong> Item - Edit </strong>";
 
@@ -161,7 +161,7 @@ public partial class CPanel_Item_AddEdit : System.Web.UI.Page
         else
         {
             sQry = string.Format(@"INSERT INTO Items(ItemID,ItemTypeID,ItemCode,ItemName,ItemDescription,ItemPrice,VegNonVeg,ItemAddOnID,StarReceipe)
-                        VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}); ", clsCommon.sQuote(clsCommon.Remove_SQLInjection(sItemID.Trim())),
+                        VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8}); ", clsCommon.sQuote(clsCommon.Remove_SQLInjection(sItemID.Trim())),
                         clsCommon.sQuote(clsCommon.Remove_SQLInjection(ddlItemType.SelectedValue.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtItemCode.Text.Trim())),
                         clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtItemName.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtItemDesc.Text.Trim())),
                         clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtItemPrice.Text.Trim())), (rdbVeg.Checked ? "'V'" : "'N'"),
@@ -179,7 +179,7 @@ public partial class CPanel_Item_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating Item.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating Item.&nbsp;" + ErrMsg;
         }
     }
 }

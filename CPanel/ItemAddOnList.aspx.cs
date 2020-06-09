@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Data;
 using System.Text;
 using System.Web.UI.HtmlControls;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_ItemAddOnList : System.Web.UI.Page
 {
@@ -22,8 +24,7 @@ public partial class CPanel_ItemAddOnList : System.Web.UI.Page
         Mstrbody.Attributes.Add("class", "sidebar-mini fixed animated fadeIn sidebar-collapse");
         smenuUI.Attributes.Add("class", "sidebar-menu");
         #endregion
-
-
+        
         string strMsg = "";
         if (!Page.IsPostBack)
         {
@@ -42,6 +43,7 @@ public partial class CPanel_ItemAddOnList : System.Web.UI.Page
         string sCols_NS = "ItemAddOnID,AddOnName,AddOnPrice";
         StringBuilder sbGridData = new StringBuilder();
         string sContentID = "";
+
         if (sCols_NS != "")
         {
             string[] sColArr = sCols_NS.Split(',');
@@ -86,6 +88,7 @@ public partial class CPanel_ItemAddOnList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\ItemAddOn_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.ItemAddOnID +\"' onclick='javascript:DeleteItemAddOn(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -133,7 +136,6 @@ public partial class CPanel_ItemAddOnList : System.Web.UI.Page
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid('setGridWidth', newWidth, true);");
         sbScript.Append("});");
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid('navGrid', '#" + gridPager.ClientID + "', { edit: false, add: false, del: false },{/* edit options */ },{ /* add options */},{ /* delete options */},{ /* search options */ sopt: ['cn','nc','eq','ne','lt','le','gt','ge','bw','bn','ew','en']},{});");
-
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'AddOnName', '', {'text-align':'left'});");
         sbScript.Append("});");
 
@@ -141,4 +143,74 @@ public partial class CPanel_ItemAddOnList : System.Web.UI.Page
         ltrScript.Text = sbScript.ToString();
     }
 
+
+    [WebMethod]
+    public static string DeleteitemAddon(string ItemAddOnID)
+    {
+        string ErrMsg = "";
+        if ((ItemAddOnID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@"  DELETE FROM ItemAddons WHERE ItemAddOnID = '{0}' ", ItemAddOnID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<ItemAddon> lstobjItemAddon = new List<ItemAddon>();
+            {
+                string strSql = "";
+                strSql = @"SELECT ItemAddOnID,AddOnName,AddOnPrice FROM ItemAddOns";
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            ItemAddon objManageItemAddon = new ItemAddon();
+                            objManageItemAddon.AddOnName = r["AddOnName"].ToString().Trim();
+                            objManageItemAddon.ItemAddOnID = r["ItemAddOnID"].ToString().Trim();
+                            objManageItemAddon.AddOnPrice = r["AddOnPrice"].ToString().Trim();                           
+                            lstobjItemAddon.Add(objManageItemAddon);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjItemAddon);
+        }
+        catch { return ""; }
+    }
+
+    class ItemAddon
+    {
+        public string AddOnName { get; set; }
+        public string ItemAddOnID { get; set; }
+        public string AddOnPrice { get; set; }
+    }
 }

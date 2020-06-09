@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/CPanel/MasterPage.master" AutoEventWireup="true" CodeFile="ItemList.aspx.cs" Inherits="CPanel_ItemList" %>
- 
+
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
 
     <form id="form1" runat="server">
@@ -38,6 +38,53 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+            
+            function DeleteItem(ItemID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteItem(ItemID, OnSuccessDelItem, OnErrorDelItem);
+           });
+
+            }
+
+            function OnSuccessDelItem(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "Item deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+                    swal("", "Error occurred while deleting item.", "error");
+           }
+       }
+
+       function OnErrorDelItem(result) {
+           swal("", "Error occurred while deleting item.", "error");
+       }
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
         </script>
     </form>
 </asp:Content>

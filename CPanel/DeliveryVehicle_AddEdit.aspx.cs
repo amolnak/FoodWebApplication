@@ -141,7 +141,7 @@ public partial class CPanel_DeliveryVehicle_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating Delivery Vehicles.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating Delivery Vehicles.&nbsp;" + ErrMsg;
         }
     }
 

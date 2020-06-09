@@ -39,6 +39,53 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+
+            function DeleteOffer(OfferID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this offer?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteOffer(OfferID, OnSuccessDelOffer, OnErrorDelOffer);
+           });
+
+            }
+
+            function OnSuccessDelOffer(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "Offer deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+                    swal("", "Error occurred while deleting offer.", "error");
+           }
+       }
+
+       function OnErrorDelOffer(result) {
+           swal("", "Error occurred while deleting offer.", "error");
+       }
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
         </script>
     </form>
 </asp:Content>

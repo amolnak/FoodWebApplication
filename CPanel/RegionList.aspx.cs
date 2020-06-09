@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Data;
 using System.Text;
 using System.Web.UI.HtmlControls;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_RegionList : System.Web.UI.Page
 {
@@ -87,6 +89,7 @@ public partial class CPanel_RegionList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\Region_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.RegionID +\"' onclick='javascript:DeleteRegion(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -144,5 +147,81 @@ public partial class CPanel_RegionList : System.Web.UI.Page
 
         sbScript.Append("</script>");
         ltrScript.Text = sbScript.ToString();
+    }
+
+    [WebMethod]
+    public static string DeleteRegion(string RegionID)
+    {
+        string ErrMsg = "";
+        if ((RegionID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@" DELETE FROM Region WHERE RegionID = '{0}' ", RegionID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<Region> lstobjRegion = new List<Region>();
+            {
+                string strSql = "";
+                strSql = @"select RegionID,RegionName,Pincode,CASE R.Active WHEN 'Y' then 'Yes' else 'No' end as Active,CityName 
+                from Region R, City C WHERE R.CityID = C.CityID";
+
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            Region objManageRegion = new Region();
+                            objManageRegion.RegionID = r["RegionID"].ToString().Trim();
+                            objManageRegion.RegionName = r["RegionName"].ToString().Trim();
+                            objManageRegion.Pincode = r["Pincode"].ToString().Trim();
+                            objManageRegion.Active = r["Active"].ToString().Trim();
+                            objManageRegion.CityName = r["CityName"].ToString().Trim();
+                            lstobjRegion.Add(objManageRegion);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjRegion);
+        }
+        catch { return ""; }
+    }
+
+    class Region
+    {
+        public string RegionID { get; set; }
+        public string RegionName { get; set; }
+        public string Pincode { get; set; }
+        public string Active { get; set; }
+        public string CityName { get; set; }
     }
 }

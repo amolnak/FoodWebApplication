@@ -109,7 +109,7 @@ public partial class CPanel_Offer_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating Offer.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating Offer.&nbsp;" + ErrMsg;
         }
     }
 

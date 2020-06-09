@@ -25,7 +25,7 @@
                         <table id="theGrid" runat="server"></table>
                         <div id="gridPager" runat="server"></div>
 
-                        <hr style="color: #ccc; background-color: #ccc; height: 1px; border: none; clear: both; margin: 10px 0;"/>
+                        <hr style="color: #ccc; background-color: #ccc; height: 1px; border: none; clear: both; margin: 10px 0;" />
 
                         <a href="Dashboard1.aspx" class="btn btn-secondary btn-sm"><i class="fa fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
@@ -40,6 +40,53 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+
+            function DeleteItemAddOn(ItemAddOnID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this item addon?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteitemAddon(ItemAddOnID, OnSuccessDelItemAddOn, OnErrorDelItemAddOn);
+           });
+
+            }
+
+            function OnSuccessDelItemAddOn(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "Item addon deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+                    swal("", "Error occurred while deleting item addon.", "error");
+           }
+       }
+
+       function OnErrorDelItemAddOn(result) {
+           swal("", "Error occurred while deleting item addon.", "error");
+       }
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
         </script>
     </form>
 </asp:Content>

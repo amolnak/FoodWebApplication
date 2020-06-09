@@ -8,6 +8,8 @@ using System.Web.UI.HtmlControls;
 using System.Configuration;
 using System.Text;
 using System.Data;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_SchoolList : System.Web.UI.Page
 {
@@ -86,6 +88,7 @@ public partial class CPanel_SchoolList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\School_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.SchoolID +\"' onclick='javascript:DeleteSchool(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -150,5 +153,88 @@ public partial class CPanel_SchoolList : System.Web.UI.Page
 
         sbScript.Append("</script>");
         ltrScript.Text = sbScript.ToString();
+    }
+
+
+    [WebMethod]
+    public static string DeleteSchool(string SchoolID)
+    {
+        string ErrMsg = "";
+        if ((SchoolID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@" DELETE FROM Schools WHERE SchoolID = '{0}' ", SchoolID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<School> lstobjSchool = new List<School>();
+            {
+                string strSql = "";
+                strSql = @"select SchoolID,SchoolName,EmailID,Phone1,Cityname,RegionName,ISNULL(NoofSubscribers,0) as NoofSubscribers,
+                Case S.Active when 'Y' then 'Yes' else 'No' end as Active from Schools S,City C, Region R where S.CityID = C.CityID and S.RegionID = R.RegionID";
+
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            School objManageSchool = new School();
+                            objManageSchool.SchoolID = r["SchoolID"].ToString().Trim();
+                            objManageSchool.SchoolName = r["SchoolName"].ToString().Trim();
+                            objManageSchool.EmailID = r["EmailID"].ToString().Trim();
+                            objManageSchool.Phone1 = r["Phone1"].ToString().Trim();
+                            objManageSchool.Cityname = r["Cityname"].ToString().Trim();
+                            objManageSchool.RegionName = r["RegionName"].ToString().Trim();
+                            objManageSchool.NoofSubscribers = r["NoofSubscribers"].ToString().Trim();
+                            objManageSchool.Active = r["Active"].ToString().Trim();
+                            lstobjSchool.Add(objManageSchool);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjSchool);
+        }
+        catch { return ""; }
+    }
+
+    class School
+    {
+        public string SchoolID { get; set; }
+        public string SchoolName { get; set; }
+        public string EmailID { get; set; }
+        public string Phone1 { get; set; }
+        public string Cityname { get; set; }
+        public string RegionName { get; set; }
+        public string NoofSubscribers { get; set; }
+        public string Active { get; set; }
     }
 }

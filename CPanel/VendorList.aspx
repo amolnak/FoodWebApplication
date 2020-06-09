@@ -1,5 +1,5 @@
-﻿<%@ Page Language="C#"  MasterPageFile="~/CPanel/MasterPage.master"  AutoEventWireup="true" CodeFile="VendorList.aspx.cs" Inherits="CPanel_VendorList" %>
- 
+﻿<%@ Page Language="C#" MasterPageFile="~/CPanel/MasterPage.master" AutoEventWireup="true" CodeFile="VendorList.aspx.cs" Inherits="CPanel_VendorList" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
 
     <form id="form1" runat="server">
@@ -38,6 +38,52 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+
+            function DeleteVendor(VendorID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this vendor?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteVendor(VendorID, OnSuccessDelVendor, OnErrorDelVendor);
+           });
+            }
+
+            function OnSuccessDelVendor(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "Vendor deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+               swal("", "Error occurred while deleting vendor.", "error");
+           }
+       }
+
+       function OnErrorDelVendor(result) {
+           swal("", "Error occurred while deleting vendor.", "error");
+       }
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
         </script>
     </form>
 </asp:Content>

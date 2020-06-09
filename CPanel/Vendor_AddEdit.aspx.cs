@@ -141,7 +141,7 @@ public partial class CPanel_Vendor_AddEdit : System.Web.UI.Page
         }
         else
         {
-            sQry = string.Format(@"INSERT INTO Vendors(VendorID,VendorCode,UserName,Password,VendorFName,VendorLName,VendorEmail,VendorPhone1,VendorPhone2,VendorAddress
+            sQry = string.Format(@"INSERT INTO Vendors(VendorID,VendorCode,UserName,Password,VendorFName,VendorLName,VendorEmail,VendorPhone1,VendorPhone2,VendorAddress,
                    DeliveryProvision,CityID,RegionID,Active,LocationMAP) VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},''); ", clsCommon.sQuote(sVendorID.Trim()),
                    clsCommon.sQuote(clsCommon.Remove_SQLInjection(txtVendorCode.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtUserName.Text.Trim())),
                    clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtPassword.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtVendorFName.Text.Trim())),
@@ -162,7 +162,7 @@ public partial class CPanel_Vendor_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating Vendor.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating Vendor.&nbsp;" + ErrMsg;
         }
     }
 

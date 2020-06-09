@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
 {
@@ -85,6 +87,7 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\DeliveryVehicle_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.VehicleID +\"' onclick='javascript:DeleteVehicle(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -145,5 +148,85 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
 
         sbScript.Append("</script>");
         ltrScript.Text = sbScript.ToString();
+    }
+
+
+    [WebMethod]
+    public static string DeleteVehicle(string VehicleID)
+    {
+        string ErrMsg = "";
+        if ((VehicleID != ""))
+        { 
+            if (clsDatabase.ExecuteNonQuery(string.Format(@"  DELETE FROM DeliveryVehicles WHERE VehicleID = '{0}' ", VehicleID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<Vehicle> lstobjVehicle = new List<Vehicle>();
+            {
+                string strSql = "";
+                strSql = @"SELECT VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,CASE GPSEnabled WHEN 'Y' THEN 'Yes' else 'No' end as GPSEnabled FROM DeliveryVehicles";
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            Vehicle objManageVehicle = new Vehicle();
+
+                            objManageVehicle.VehicleID = r["VehicleID"].ToString().Trim();
+                            objManageVehicle.VehicleNo = r["VehicleNo"].ToString().Trim();
+                            objManageVehicle.Brand = r["Brand"].ToString().Trim();
+                            objManageVehicle.Model = r["Model"].ToString().Trim();
+                            objManageVehicle.ChasisNo = r["ChasisNo"].ToString().Trim();
+                            objManageVehicle.FuelType = r["FuelType"].ToString().Trim();
+                            objManageVehicle.GPSEnabled = r["GPSEnabled"].ToString().Trim();                             
+                            lstobjVehicle.Add(objManageVehicle);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjVehicle);
+        }
+        catch { return ""; }
+    }
+
+    class Vehicle
+    {
+        public string VehicleID { get; set; }
+        public string VehicleNo { get; set; }
+        public string Brand { get; set; }
+        public string Model { get; set; }
+        public string ChasisNo { get; set; }
+        public string FuelType { get; set; }
+        public string GPSEnabled { get; set; }        
     }
 }

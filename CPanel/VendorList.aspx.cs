@@ -8,6 +8,8 @@ using System.Web.UI.HtmlControls;
 using System.Configuration;
 using System.Text;
 using System.Data;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_VendorList : System.Web.UI.Page
 {
@@ -87,6 +89,7 @@ public partial class CPanel_VendorList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\Vendor_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.VendorID +\"' onclick='javascript:DeleteVendor(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -151,5 +154,92 @@ public partial class CPanel_VendorList : System.Web.UI.Page
 
         sbScript.Append("</script>");
         ltrScript.Text = sbScript.ToString();
+    }
+
+    [WebMethod]
+    public static string DeleteVendor(string VendorID)
+    {
+        string ErrMsg = "";
+        if ((VendorID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@" DELETE FROM Vendors WHERE VendorID = '{0}' ", VendorID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<Vendor> lstobjVendor = new List<Vendor>();
+            {
+                string strSql = "";
+                strSql = @"select VendorID,VendorCode,VendorFName + ' ' + VendorLName as Name,VendorEmail,VendorPhone1,VendorPhone2, R.RegionName as Region, 
+                C.CityName as City,Case DeliveryProvision WHEN 'Y' then 'Yes' else 'No' end as DeliveryProvision, CASE vendors.Active WHEN 'Y' then 'Active'
+                else 'In-active' end as Active from vendors INNER JOIN Region R ON vendors.RegionID = R.RegionID INNER JOIN City C on C.CityID = vendors.CityID";
+
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            Vendor objManageVendor = new Vendor();
+                            objManageVendor.VendorID = r["VendorID"].ToString().Trim();
+                            objManageVendor.VendorCode = r["VendorCode"].ToString().Trim();
+                            objManageVendor.Name = r["Name"].ToString().Trim();
+                            objManageVendor.VendorEmail = r["VendorEmail"].ToString().Trim();
+                            objManageVendor.VendorPhone1 = r["VendorPhone1"].ToString().Trim();
+                            objManageVendor.VendorPhone2 = r["VendorPhone2"].ToString().Trim();
+                            objManageVendor.Region = r["Region"].ToString().Trim();
+                            objManageVendor.City = r["City"].ToString().Trim();
+                            objManageVendor.DeliveryProvision = r["DeliveryProvision"].ToString().Trim();
+                            objManageVendor.Active = r["Active"].ToString().Trim();
+                            lstobjVendor.Add(objManageVendor);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjVendor);
+        }
+        catch { return ""; }
+    }
+
+    class Vendor
+    {
+        public string VendorID { get; set; }
+        public string VendorCode { get; set; }
+        public string Name { get; set; }
+        public string VendorEmail { get; set; }
+        public string VendorPhone1 { get; set; }
+        public string VendorPhone2 { get; set; }
+        public string Region { get; set; }
+        public string City { get; set; }
+        public string DeliveryProvision { get; set; }       
+        public string Active { get; set; }
     }
 }

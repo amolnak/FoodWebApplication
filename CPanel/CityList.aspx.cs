@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Data;
 using System.Text;
 using System.Web.UI.HtmlControls;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_CityList : System.Web.UI.Page
 {
@@ -86,6 +88,7 @@ public partial class CPanel_CityList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\City_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.CityID +\"' onclick='javascript:DeleteCity(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -143,4 +146,76 @@ public partial class CPanel_CityList : System.Web.UI.Page
         ltrScript.Text = sbScript.ToString();
     }
 
+    [WebMethod]
+    public static string DeleteCity(string CityID)
+    {
+        string ErrMsg = "";
+        if ((CityID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@"  DELETE FROM City WHERE CityID = '{0}' ", CityID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<City> lstobjCity = new List<City>();
+            {
+                string strSql = "";
+                strSql = "SELECT CityID,CityName,CityCode, CASE Active WHEN 'Y' THEN 'Active' ELSE 'In-Active' END as Active FROM City";
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            City objManageCity = new City();
+
+                            objManageCity.CityID = r["CityID"].ToString().Trim();
+                            objManageCity.CityCode = r["CityCode"].ToString().Trim();
+                            objManageCity.CityName = r["CityName"].ToString().Trim();
+                            objManageCity.Active = r["Active"].ToString().Trim();
+                            lstobjCity.Add(objManageCity);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjCity);
+        }
+        catch { return ""; }
+    }
+    
+    class City
+    {
+        public string CityID { get; set; }
+        public string CityCode { get; set; }
+        public string CityName { get; set; }
+        public string Active { get; set; }
+    }
 }

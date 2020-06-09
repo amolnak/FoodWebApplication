@@ -8,6 +8,8 @@ using System.Web.UI.HtmlControls;
 using System.Configuration;
 using System.Text;
 using System.Data;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_OfferList : System.Web.UI.Page
 {
@@ -87,6 +89,7 @@ public partial class CPanel_OfferList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\Offer_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.OfferID +\"' onclick='javascript:DeleteOffer(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -146,5 +149,88 @@ public partial class CPanel_OfferList : System.Web.UI.Page
 
         sbScript.Append("</script>");
         ltrScript.Text = sbScript.ToString();
+    }
+
+
+    [WebMethod]
+    public static string DeleteOffer(string OfferID)
+    {
+        string ErrMsg = "";
+        if ((OfferID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@" DELETE FROM Offers WHERE OfferID = '{0}' ", OfferID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<offers> lstobjoffers = new List<offers>();
+            {
+                string strSql = "";
+                strSql = @"select OfferID, OfferCode, OfferName, OfferDescription, Offertype, I.ItemName,Price, CASE Active when 'Y' then 'Yes'
+                else 'No' end as Active from offers O, Items I where O.ItemID = I.ItemID";
+
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            offers objManageoffers = new offers();
+                            objManageoffers.OfferID = r["OfferID"].ToString().Trim();
+                            objManageoffers.OfferCode = r["OfferCode"].ToString().Trim();
+                            objManageoffers.OfferName = r["OfferName"].ToString().Trim();
+                            objManageoffers.OfferDescription = r["OfferDescription"].ToString().Trim();
+                            objManageoffers.Offertype = r["Offertype"].ToString().Trim();
+                            objManageoffers.ItemName = r["ItemName"].ToString().Trim();
+                            objManageoffers.Price = r["Price"].ToString().Trim();
+                            objManageoffers.Active = r["Active"].ToString().Trim();
+                            lstobjoffers.Add(objManageoffers);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjoffers);
+        }
+        catch { return ""; }
+    }
+
+    class offers
+    {
+        public string OfferID { get; set; }
+        public string OfferCode { get; set; }
+        public string OfferName { get; set; }
+        public string OfferDescription { get; set; }
+        public string Offertype { get; set; }
+        public string ItemName { get; set; }
+        public string Price { get; set; }
+        public string Active { get; set; }
     }
 }

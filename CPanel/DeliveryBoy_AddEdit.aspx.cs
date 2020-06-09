@@ -167,7 +167,7 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating delivery boy.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating delivery boy.&nbsp;" + ErrMsg;
         }
     }
 

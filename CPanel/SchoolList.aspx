@@ -1,5 +1,5 @@
-﻿<%@ Page Language="C#"  MasterPageFile="~/CPanel/MasterPage.master" AutoEventWireup="true" CodeFile="SchoolList.aspx.cs" Inherits="CPanel_SchoolList" %>
- 
+﻿<%@ Page Language="C#" MasterPageFile="~/CPanel/MasterPage.master" AutoEventWireup="true" CodeFile="SchoolList.aspx.cs" Inherits="CPanel_SchoolList" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
 
     <form id="form1" runat="server">
@@ -38,6 +38,53 @@
                 $('#jqgh_ContentPlaceHolder1_theGrid_Active').css("text-align", "center");
                 $('#jqgh_ContentPlaceHolder1_theGrid_AdminId').css("text-align", "center");
             });
+
+            function DeleteSchool(SchoolID) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to delete this school?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+           function () {
+               PageMethods.DeleteSchool(SchoolID, OnSuccessDelSchool, OnErrorDelSchool);
+           });
+
+            }
+
+            function OnSuccessDelSchool(result) {
+                if (result != "") {
+                    refreshGrid('#<%=theGrid.ClientID%>', JSON.parse(result));
+               swal({
+                   title: "",
+                   text: "School deleted successfully.",
+                   type: "success",
+                   confirmButtonText: "OK",
+                   closeOnConfirm: false
+               }, function (isConfirm) {
+                   if (isConfirm) {
+                       window.location.reload();
+                   }
+               });
+           }
+           else {
+               swal("", "Error occurred while deleting school.", "error");
+           }
+       }
+
+       function OnErrorDelSchool(result) {
+           swal("", "Error occurred while deleting school.", "error");
+       }
+
+       function refreshGrid(grid, results) {
+           var objres = (results);
+           $(grid).jqGrid('clearGridData')
+               .jqGrid('setGridParam', { data: objres })
+               .trigger('reloadGrid', [{ page: 1 }]);
+       }
         </script>
     </form>
 </asp:Content>

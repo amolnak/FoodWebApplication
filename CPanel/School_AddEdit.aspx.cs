@@ -135,11 +135,10 @@ public partial class CPanel_School_AddEdit : System.Web.UI.Page
         else
         {
             sQry = string.Format(@"INSERT INTO Schools(SchoolID,SchoolName,Address,EmailID,Phone1,Phone2,CityID,RegionID,Active,LocationMAP)
-                   VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8},''); ", clsCommon.sQuote(clsCommon.Remove_SQLInjection(hfSchoolID.Value.Trim())),
-                   clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtSchoolName.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtAddress.Text.Trim())),
-                   clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtEmailID.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtPhone1.Text.Trim())),
-                   clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtPhone2.Text.Trim())), clsCommon.sQuote(ddlCity.SelectedValue), clsCommon.sQuote(ddlRegion.SelectedValue),
-                   (rdbActive.Checked ? "'Y'" : "'N'"));
+                   VALUES({0},{1},{2},{3},{4},{5},{6},{7},{8},''); ", clsCommon.sQuote_N(sDeliveryBoyID), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtSchoolName.Text.Trim())),
+                   clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtAddress.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtEmailID.Text.Trim())),
+                   clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtPhone1.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtPhone2.Text.Trim())),
+                   clsCommon.sQuote(ddlCity.SelectedValue), clsCommon.sQuote(ddlRegion.SelectedValue), (rdbActive.Checked ? "'Y'" : "'N'"));
         }
 
         string ErrMsg = "";
@@ -153,7 +152,7 @@ public partial class CPanel_School_AddEdit : System.Web.UI.Page
         else
         {
             dvError.Style.Add("display", "");
-            dvError.InnerHtml = "Error occured while adding/Updating school.&nbsp;" + ErrMsg;
+            dvError.InnerHtml = "Error occurred while adding/Updating school.&nbsp;" + ErrMsg;
         }
     }
 

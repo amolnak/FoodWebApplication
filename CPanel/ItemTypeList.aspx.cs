@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Data;
 using System.Text;
 using System.Web.UI.HtmlControls;
+using System.Web.Services;
+using Newtonsoft.Json;
 
 public partial class CPanel_ItemTypeList : System.Web.UI.Page
 {
@@ -86,6 +88,7 @@ public partial class CPanel_ItemTypeList : System.Web.UI.Page
         sbScript.Append("'use strict'; var gidData = [" + sbGridData.ToString() + "], theGrid = $('#" + theGrid.ClientID + "'), numberTemplate = { formatter: 'number', align: 'right', sorttype: 'number' }, horizontalScrollPosition = 0, selectedRow = null;");
         sbScript.Append("var btnEdit = function(cellVal,options,rowObject) {");
         sbScript.Append("var Edit= \"<a href='\\ItemType_AddEdit.aspx?ID=\" + cellVal + \"' title='Edit' ><i class='fa fa-pencil-square'></i></a>\";");
+        sbScript.Append(" Edit +=  \"&nbsp;&nbsp;<a id='del\"+ rowObject.ItemType +\"' onclick='javascript:DeleteItemType(&quot;\"+cellVal+\"&quot;)' title='Delete' style='cursor:pointer;'><i class='fa fa-trash-o' ></i></a>\";");
         sbScript.Append("return Edit; ");
         sbScript.Append("};");
 
@@ -138,4 +141,71 @@ public partial class CPanel_ItemTypeList : System.Web.UI.Page
         ltrScript.Text = sbScript.ToString();
     }
 
+    [WebMethod]
+    public static string DeleteItemType(string ItemTypeID)
+    {
+        string ErrMsg = "";
+        if ((ItemTypeID != ""))
+        {
+            if (clsDatabase.ExecuteNonQuery(string.Format(@" DELETE FROM ItemTypes WHERE ItemTypeID = '{0}' ", ItemTypeID), ref ErrMsg))
+            {
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                else
+                    return GetJSon_Obj();
+            }
+            else
+                return "";
+        }
+        else
+            return "";
+    }
+
+    public static string GetJSon_Obj()
+    {
+        string ErrMsg = "";
+        try
+        {
+            List<ItemType> lstobjItemType = new List<ItemType>();
+            {
+                string strSql = "";
+                strSql = @"SELECT * FROM ItemTypes";
+                if (ErrMsg != string.Empty)
+                {
+                    clsCommon.ErrorAlertBox(ErrMsg);
+                    return "";
+                }
+                using (DataTable dtList = clsDatabase.GetDT(strSql, ref ErrMsg))
+                {
+                    if (ErrMsg != string.Empty)
+                    {
+                        clsCommon.ErrorAlertBox(ErrMsg);
+                        return "";
+                    }
+                    if ((dtList.Rows.Count > 0))
+                    {
+                        rowcount = dtList.Rows.Count;
+                        foreach (DataRow r in dtList.Rows)
+                        {
+                            ItemType objManageItemType = new ItemType();
+                            objManageItemType.ItemTypeID = r["ItemTypeID"].ToString().Trim();
+                            objManageItemType.ItemTypeName = r["ItemType"].ToString().Trim();                            
+                            lstobjItemType.Add(objManageItemType);
+                        }
+                    }
+                }
+            }
+            return JsonConvert.SerializeObject(lstobjItemType);
+        }
+        catch { return ""; }
+    }
+
+    class ItemType
+    {
+        public string ItemTypeID { get; set; }
+        public string ItemTypeName { get; set; }
+    }
 }
