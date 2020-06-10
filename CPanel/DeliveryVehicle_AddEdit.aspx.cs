@@ -27,6 +27,13 @@ public partial class CPanel_DeliveryVehicle_AddEdit : System.Web.UI.Page
             hfVehicleID.Value = "";
             lblTitle.InnerHtml = "<strong> Delivery Vehicle - Add </strong>";
 
+            clsCommon.FillCombo(ref ddlCity, "SELECT CityID,CityName FROM City where Active <>'N' ORDER BY CityName ASC", "CityName", "CityID", "Select city", ref strMsg);
+            if (strMsg != "")
+            {
+                clsCommon.ErrorAlertBox(strMsg);
+                return;
+            }
+
             if (Request.QueryString["ID"] != null)
             {
                 if (Request.QueryString["ID"].ToString() != "")
@@ -48,6 +55,7 @@ public partial class CPanel_DeliveryVehicle_AddEdit : System.Web.UI.Page
                             txtModel.Text = Dt.Rows[0]["Model"].ToString().Trim();
                             txtChasisNo.Text = Dt.Rows[0]["ChasisNo"].ToString().Trim();
                             txtFuelType.Text = Dt.Rows[0]["FuelType"].ToString().Trim();
+                            ddlCity.SelectedValue = Dt.Rows[0]["CityID"].ToString().Trim();
                             rdbYes.Checked = (Dt.Rows[0]["GPSEnabled"].ToString().Trim() == "Y" ? true : false);
                             rdbNo.Checked = (Dt.Rows[0]["GPSEnabled"].ToString().Trim() == "N" ? true : false);
                         }
@@ -110,24 +118,19 @@ public partial class CPanel_DeliveryVehicle_AddEdit : System.Web.UI.Page
 
         if ((hfVehicleID.Value.Trim().Length > 0) && (hfVehicleID.Value != "0"))
         {
-            sQry = string.Format("UPDATE DeliveryVehicles SET VehicleNo={0}, Brand={1}, Model={2}, ChasisNo={3}, FuelType={4}, GPSEnabled={5} WHERE VehicleID={6}; ",
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtVehicleNo.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtBrand.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtModel.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtChasisNo.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtFuelType.Text.Trim())),
-                        (rdbYes.Checked ? "'Y'" : "'N'"), clsCommon.sQuote(clsCommon.Remove_SQLInjection(hfVehicleID.Value.Trim())));
+            sQry = string.Format("UPDATE DeliveryVehicles SET VehicleNo={0}, Brand={1}, Model={2}, ChasisNo={3}, FuelType={4}, GPSEnabled={5}, CityID={6} WHERE VehicleID={7}; ",
+                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtVehicleNo.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtBrand.Text.Trim())),
+                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtModel.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtChasisNo.Text.Trim())),
+                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtFuelType.Text.Trim())), (rdbYes.Checked ? "'Y'" : "'N'"), clsCommon.sQuote(ddlCity.SelectedValue),
+                        clsCommon.sQuote(hfVehicleID.Value.Trim()));
         }
         else
         {
-            sQry = string.Format("INSERT INTO DeliveryVehicles(VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,GPSEnabled) VALUES({0},{1},{2},{3},{4},{5},{6}); ",
-                        clsCommon.sQuote(clsCommon.Remove_SQLInjection(sVehicleID.Trim())), 
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtVehicleNo.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtBrand.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtModel.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtChasisNo.Text.Trim())),
-                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtFuelType.Text.Trim())),
-                        (rdbYes.Checked ? "'Y'" : "'N'"));
+            sQry = string.Format("INSERT INTO DeliveryVehicles(VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,GPSEnabled,CityID) VALUES({0},{1},{2},{3},{4},{5},{6},{7}); ",
+                        clsCommon.sQuote(clsCommon.Remove_SQLInjection(sVehicleID.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtVehicleNo.Text.Trim())),
+                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtBrand.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtModel.Text.Trim())),
+                        clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtChasisNo.Text.Trim())), clsCommon.sQuote_N(clsCommon.Remove_SQLInjection(txtFuelType.Text.Trim())),
+                        (rdbYes.Checked ? "'Y'" : "'N'"), clsCommon.sQuote(ddlCity.SelectedValue));
         }
 
         string ErrMsg = "";
@@ -165,6 +168,15 @@ public partial class CPanel_DeliveryVehicle_AddEdit : System.Web.UI.Page
             dvError.Style.Add("display", "");
             dvError.InnerText = "Please enter chasis no.";
             txtChasisNo.Focus();
+            return;
+        }
+
+        if (ddlCity.Text.Trim() == string.Empty)
+        {
+            args.IsValid = false;
+            dvError.Style.Add("display", "");
+            dvError.InnerText = "Please enter city.";
+            ddlCity.Focus();
             return;
         }
     }

@@ -39,15 +39,19 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
 
     private void GetJSon(ref string ErrMsg)
     {
-        string ErrMsgs = ""; ErrMsg = "";
-        string sCols_NS = "VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,GPSEnabled";
+        string ErrMsgs = "", StrWhereClause = "";
+        string sCols_NS = "VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,GPSEnabled,City";
         StringBuilder sbGridData = new StringBuilder();
         string sContentID = "";
         if (sCols_NS != "")
         {
             string[] sColArr = sCols_NS.Split(',');
 
-            using (DataTable Dt = clsDatabase.GetDT(@"SELECT VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType,CASE GPSEnabled WHEN 'Y' THEN 'Yes' else 'No' end as GPSEnabled FROM DeliveryVehicles", ref ErrMsgs))
+            if (clsCommon.GetSessionKeyValue("AccessLevel") == "2")
+                StrWhereClause = string.Format(" AND DeliveryVehicles.CityID = (select CityID from AdminMast where AdminID = {0})", clsCommon.sQuote(clsCommon.GetSessionKeyValue("AdminID")));
+
+            using (DataTable Dt = clsDatabase.GetDT(@"SELECT VehicleID,VehicleNo,Brand,Model,ChasisNo,FuelType, CASE GPSEnabled WHEN 'Y' THEN 'Yes' else 'No' end as GPSEnabled,
+            C.CityName as City FROM DeliveryVehicles INNER JOIN City C on C.CityID = DeliveryVehicles.CityID WHERE 1 = 1 " + StrWhereClause, ref ErrMsgs))
             {
                 if (ErrMsgs != "")
                 {
@@ -95,13 +99,14 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         sbScript.Append("contentType: 'application/json; charset=utf-8',");
         sbScript.Append("datatype: 'local',");
         sbScript.Append("data: gidData,");
-        sbScript.Append("colNames: ['Vehicle No','Brand','Model','Chasis No','Fuel Type','GPS Enabled','Action'],");
+        sbScript.Append("colNames: ['Vehicle No','Brand','Model','Chasis No','Fuel Type','City','GPS Enabled','Action'],");
         sbScript.Append("colModel: [");
-        sbScript.Append("{name:'VehicleNo', index:'VehicleNo',width:150, cellattr: function () { return ' data-title=\"Vehicle No\"'; }},");
-        sbScript.Append("{name:'Brand', index:'Brand',width:150, cellattr: function () { return ' data-title=\"Brand\"'; }},");
+        sbScript.Append("{name:'VehicleNo', index:'VehicleNo',width:90, cellattr: function () { return ' data-title=\"Vehicle No\"'; }},");
+        sbScript.Append("{name:'Brand', index:'Brand',width:90, cellattr: function () { return ' data-title=\"Brand\"'; }},");
         sbScript.Append("{name:'Model', index:'Model',classes:'alignCenter', hidden:false,width:70, cellattr: function () { return ' data-title=\"Model\"'; }},");
         sbScript.Append("{name:'ChasisNo', index:'ChasisNo',classes:'alignCenter',width:50, cellattr: function () { return ' data-title=\"Chasis No\"'; }},");
         sbScript.Append("{name:'FuelType', index:'FuelType',width:50, cellattr: function () { return ' data-title=\"Fuel Type\"'; }},");
+        sbScript.Append("{name:'City', index:'City',width:90, cellattr: function () { return ' data-title=\"City\"'; }, width:50},");
         sbScript.Append("{name:'GPSEnabled', index:'GPSEnabled', classes:'alignCenter', cellattr: function () { return ' data-title=\"GPS Enabled\"'; }, width:50},");
         sbScript.Append("{name:'VehicleID',index:'VehicleID',sortable:false,search : false, classes:'alignCenter', cellattr: function () { return ' data-title=\"Action\"'; },width:30, formatter: btnEdit}");
         sbScript.Append("],");
@@ -142,8 +147,8 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
 
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'VehicleNo', '', {'text-align':'left'});");
         sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'Brand', '', {'text-align':'left'});");
-        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'FuelType', '', {'text-align':'left'});"); 
-
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'FuelType', '', {'text-align':'left'});");
+        sbScript.Append("jQuery('#" + theGrid.ClientID + "').jqGrid ('setLabel', 'City', '', {'text-align':'left'});");
         sbScript.Append("});");
 
         sbScript.Append("</script>");
@@ -156,7 +161,7 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
     {
         string ErrMsg = "";
         if ((VehicleID != ""))
-        { 
+        {
             if (clsDatabase.ExecuteNonQuery(string.Format(@"  DELETE FROM DeliveryVehicles WHERE VehicleID = '{0}' ", VehicleID), ref ErrMsg))
             {
                 if (ErrMsg != string.Empty)
@@ -208,7 +213,7 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
                             objManageVehicle.Model = r["Model"].ToString().Trim();
                             objManageVehicle.ChasisNo = r["ChasisNo"].ToString().Trim();
                             objManageVehicle.FuelType = r["FuelType"].ToString().Trim();
-                            objManageVehicle.GPSEnabled = r["GPSEnabled"].ToString().Trim();                             
+                            objManageVehicle.GPSEnabled = r["GPSEnabled"].ToString().Trim();
                             lstobjVehicle.Add(objManageVehicle);
                         }
                     }
@@ -227,6 +232,6 @@ public partial class CPanel_DeliveryVehicleList : System.Web.UI.Page
         public string Model { get; set; }
         public string ChasisNo { get; set; }
         public string FuelType { get; set; }
-        public string GPSEnabled { get; set; }        
+        public string GPSEnabled { get; set; }
     }
 }

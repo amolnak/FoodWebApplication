@@ -1,6 +1,5 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/CPanel/MasterPage.master" AutoEventWireup="true" CodeFile="DeliveryBoy_AddEdit.aspx.cs" Inherits="CPanel_DeliveryBoy_AddEdit" %>
 
-
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
 
     <form id="form1" runat="server">

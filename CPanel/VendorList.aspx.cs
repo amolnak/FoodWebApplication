@@ -39,7 +39,7 @@ public partial class CPanel_VendorList : System.Web.UI.Page
 
     private void GetJSon(ref string ErrMsg)
     {
-        string ErrMsgs = ""; ErrMsg = "";
+        string ErrMsgs = "", StrWhereClause = "";
         string sCols_NS = "VendorID,VendorCode,Name,VendorEmail,VendorPhone1,VendorPhone2,Region,City,DeliveryProvision,Active";
         StringBuilder sbGridData = new StringBuilder();
         string sContentID = "";
@@ -47,9 +47,12 @@ public partial class CPanel_VendorList : System.Web.UI.Page
         {
             string[] sColArr = sCols_NS.Split(',');
 
-            using (DataTable Dt = clsDatabase.GetDT(@"select VendorID,VendorCode,VendorFName + ' ' + VendorLName as Name,VendorEmail,VendorPhone1,VendorPhone2,
-            R.RegionName as Region, C.CityName as City,Case DeliveryProvision WHEN 'Y' then 'Yes' else 'No' end as DeliveryProvision, CASE vendors.Active WHEN 'Y' then 'Active'
-            else 'In-active' end as Active from vendors INNER JOIN Region R ON vendors.RegionID = R.RegionID INNER JOIN City C on C.CityID = vendors.CityID", ref ErrMsgs))
+            if (clsCommon.GetSessionKeyValue("AccessLevel") == "2")
+                StrWhereClause = string.Format(" AND vendors.CityID  = (select CityID from AdminMast where AdminID = {0})", clsCommon.sQuote(clsCommon.GetSessionKeyValue("AdminID")));
+
+            using (DataTable Dt = clsDatabase.GetDT(@"select VendorID,VendorCode,VendorFName + ' ' + VendorLName as Name,VendorEmail,VendorPhone1,VendorPhone2, R.RegionName as Region, 
+            C.CityName as City,Case DeliveryProvision WHEN 'Y' then 'Yes' else 'No' end as DeliveryProvision, CASE vendors.Active WHEN 'Y' then 'Active' else 'In-active' end as Active 
+            from vendors INNER JOIN Region R ON vendors.RegionID = R.RegionID INNER JOIN City C on C.CityID = vendors.CityID WHERE 1 = 1 " + StrWhereClause, ref ErrMsgs))
             {
                 if (ErrMsgs != "")
                 {

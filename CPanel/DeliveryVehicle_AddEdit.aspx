@@ -15,7 +15,7 @@
 
                         <div class="row mt-20">
 
-                            <div class="alert alert-danger p-10 mb-15" id="dvError" runat="server"></div>
+                            <div class="alert alert-danger p-10 mb-15 col-lg-12" id="dvError" runat="server"></div>
                             <div class="form-horizontal form-sm col-lg-12">
                                 <div class="row form-group">
                                     <div class="col-lg-5 col-md-5 col-sm-5 control-label">
@@ -63,12 +63,22 @@
                                 </div>
                                 <div class="row form-group">
                                     <div class="col-lg-5 col-md-5 col-sm-5 control-label">
+                                        City<span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4">
+                                        <asp:DropDownList ID="ddlCity" runat="server" CssClass="form-control" TabIndex="6" AutoPostBack="true" />
+                                        <asp:RequiredFieldValidator ID="reqfld_city" InitialValue="" runat="server" ControlToValidate="ddlCity" ErrorMessage="Please select city."
+                                            Display="Dynamic" CssClass="text-danger" ValidationGroup="vg" EnableClientScript="true" />
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col-lg-5 col-md-5 col-sm-5 control-label">
                                         GPS Enabled  
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
                                         <div class="radio radio-inline">
-                                            <asp:RadioButton ID="rdbYes" runat="server" Text="Yes" GroupName="Status" Checked="true" TabIndex="6" />&nbsp;&nbsp;&nbsp;&nbsp;                                       
-                                            <asp:RadioButton ID="rdbNo" runat="server" Text="No" GroupName="Status" TabIndex="7" />
+                                            <asp:RadioButton ID="rdbYes" runat="server" Text="Yes" GroupName="Status" Checked="true" TabIndex="7" />&nbsp;&nbsp;&nbsp;&nbsp;                                       
+                                            <asp:RadioButton ID="rdbNo" runat="server" Text="No" GroupName="Status" TabIndex="8" />
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +91,7 @@
 
                         <div class="pull-right" id="dvSubmit">
                             <asp:LinkButton ID="btnSubmit" OnClick="btnSubmit_Click" runat="server" ValidationGroup="vg" CausesValidation="true" CssClass="btn btn-primary btn-sm icon-btnrt"
-                                TabIndex="8">Submit&nbsp;<i class="fa fa-thumbs-up"></i></asp:LinkButton>
+                                TabIndex="9">Submit&nbsp;<i class="fa fa-thumbs-up"></i></asp:LinkButton>
                         </div>
                         <div class="clear"></div>
                         <asp:CustomValidator ID="custVal" runat="server" OnServerValidate="custVal_ServerValidate"></asp:CustomValidator>

@@ -32,12 +32,7 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
                 return;
             }
 
-            clsCommon.FillCombo(ref ddlVehicle, "SELECT VehicleID,VehicleNo FROM DeliveryVehicles ORDER BY VehicleNo ASC", "VehicleNo", "VehicleID", "Select vehicle", ref strMsg);
-            if (strMsg != "")
-            {
-                clsCommon.ErrorAlertBox(strMsg);
-                return;
-            }
+            FillVehicle("");
 
             FillRegion("");
 
@@ -70,6 +65,7 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
                             txtPhone2.Text = Dt.Rows[0]["DBPhone2"].ToString().Trim();
                             ddlCity.SelectedValue = Dt.Rows[0]["DBCityID"].ToString().Trim();
                             FillRegion(Dt.Rows[0]["DBCityID"].ToString().Trim());
+                            FillVehicle(Dt.Rows[0]["DBCityID"].ToString().Trim());
                             ddlRegion.SelectedValue = Dt.Rows[0]["DBRegionID"].ToString().Trim();
                             txtLicenseNo.Text = Dt.Rows[0]["LicenseNo"].ToString().Trim();
                             ddlVehicle.SelectedValue = Dt.Rows[0]["VehicleID"].ToString().Trim();
@@ -114,6 +110,37 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
         if (ErrMsg != "")
         {
             clsCommon.ErrorAlertBox(ErrMsg);
+            return;
+        }
+    }
+
+    public void FillVehicle(string CityID)
+    {
+        DataTable dtVehicle = new DataTable();
+        string strSql = "", strMsg = "";
+
+        if (CityID != string.Empty)
+            strSql = string.Format(@"SELECT VehicleID,VehicleNo FROM DeliveryVehicles where CityID = {0} ORDER BY VehicleNo ASC ", clsCommon.sQuote(CityID));
+
+        if (strSql != string.Empty)
+        {
+            dtVehicle = clsDatabase.GetDT(strSql, ref strMsg);
+            if (dtVehicle != null)
+            {
+                if (dtVehicle.Rows.Count > 0)
+                {
+                    ddlVehicle.DataSource = dtVehicle;
+                    ddlVehicle.DataTextField = "VehicleNo";
+                    ddlVehicle.DataValueField = "VehicleID";
+                    ddlVehicle.DataBind();
+                    ddlVehicle.Items.Insert(0, new ListItem("Select Vehicle", ""));
+                }               
+            }            
+        }        
+
+        if (strMsg != "")
+        {
+            clsCommon.ErrorAlertBox(strMsg);
             return;
         }
     }
@@ -273,6 +300,7 @@ public partial class CPanel_DeliveryBoy_AddEdit : System.Web.UI.Page
         {
             dvRegion.Visible = true;
             FillRegion(ddlCity.SelectedValue);
+            FillVehicle(ddlCity.SelectedValue);
         }
     }
 }

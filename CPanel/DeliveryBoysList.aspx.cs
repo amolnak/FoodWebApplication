@@ -39,17 +39,19 @@ public partial class CPanel_DeliveryBoysList : System.Web.UI.Page
 
     private void GetJSon(ref string ErrMsg)
     {
-        string ErrMsgs = ""; ErrMsg = "";
+        string ErrMsgs = "", StrWhereClause = "";
         string sCols_NS = "DeliveryBoyID,DBName,DBEmail,DBPhone1,DBPhone2,DBRegion,DBCity,VehicleNo";
         StringBuilder sbGridData = new StringBuilder();
         string sContentID = "";
-        if (sCols_NS != "")
         {
             string[] sColArr = sCols_NS.Split(',');
 
+            if (clsCommon.GetSessionKeyValue("AccessLevel") == "2")
+                StrWhereClause = string.Format(" AND DBCityID = (select CityID from AdminMast where AdminID = {0})", clsCommon.sQuote(clsCommon.GetSessionKeyValue("AdminID")));
+
             using (DataTable Dt = clsDatabase.GetDT(@"select DeliveryBoyID,DBFName + ' ' + DBLName as DBName,DBEmail,DBPhone1,DBPhone2,R.RegionName as DBRegion,
             C.CityName as DBCity,VehicleNo from DeliveryBoys DB INNER JOIN DeliveryVehicles DV on DV.VehicleID=DB.VehicleID INNER JOIN Region R ON 
-            DB.DBRegionID = R.RegionID INNER JOIN City C on C.CityID = DB.DBCityID", ref ErrMsgs))
+            DB.DBRegionID = R.RegionID INNER JOIN City C on C.CityID = DB.DBCityID WHERE 1 = 1 " + StrWhereClause, ref ErrMsgs))
             {
                 if (ErrMsgs != "")
                 {
